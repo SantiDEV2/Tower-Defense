@@ -15,9 +15,12 @@ public class GridManager : MonoBehaviour
     public TileObject grassTile;
     private PathGenerator pathGenerator;
     private EnemyWaveManager enemyWaveManager;
+    private Transform parent;
 
     private void Start()
     {
+
+        parent = GameObject.Find("Tiles").transform;
         pathGenerator = new PathGenerator(gridWidth, gridHeight);
         enemyWaveManager = GetComponent<EnemyWaveManager>();
 
@@ -43,7 +46,7 @@ public class GridManager : MonoBehaviour
 
             GameObject tilePrefab = hasNeighbor ? dirtTile.tilePrefab : grassTile.tilePrefab;
 
-            Instantiate(tilePrefab, new Vector3(tileCells[i].x * 5, 0f, tileCells[i].y * 5), Quaternion.identity);
+            Instantiate(tilePrefab, new Vector3(tileCells[i].x * 5, 0f, tileCells[i].y * 5), Quaternion.identity, parent);
             yield return new WaitForSeconds(0.1f);
         }
         yield return null;
@@ -57,7 +60,7 @@ public class GridManager : MonoBehaviour
             {
                 if (pathGenerator.TileisFree(x, y))
                 {
-                    Instantiate(grassTile.tilePrefab, new Vector3(x * 5, 0f, y * 5), Quaternion.identity);
+                    Instantiate(grassTile.tilePrefab, new Vector3(x * 5, 0f, y * 5), Quaternion.identity, parent);
                     yield return new WaitForSeconds(0.025f);
                 }
             }
