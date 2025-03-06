@@ -14,10 +14,12 @@ public class GridManager : MonoBehaviour
     public TileObject dirtTile;
     public TileObject grassTile;
     private PathGenerator pathGenerator;
+    private EnemyWaveManager enemyWaveManager;
 
     private void Start()
     {
         pathGenerator = new PathGenerator(gridWidth, gridHeight);
+        enemyWaveManager = GetComponent<EnemyWaveManager>();
 
         List<Vector2Int> tileCells = pathGenerator.GeneratePath();
         int pathSize = tileCells.Count;
@@ -27,8 +29,10 @@ public class GridManager : MonoBehaviour
             tileCells = pathGenerator.GeneratePath();
             pathSize = tileCells.Count;
         }
+        enemyWaveManager.SetTileCells(tileCells);
 
         StartCoroutine(DrawPath(tileCells));
+        StartCoroutine(DrawGrassTiles());
     }
 
     private IEnumerator DrawPath(List<Vector2Int> tileCells)
@@ -37,10 +41,26 @@ public class GridManager : MonoBehaviour
         {
             bool hasNeighbor = pathGenerator.HasNeighbor(tileCells[i].x, tileCells[i].y);
 
-            GameObject tilePrefab = hasNeighbor ? grassTile.tilePrefab : dirtTile.tilePrefab;
+            GameObject tilePrefab = hasNeighbor ? dirtTile.tilePrefab : grassTile.tilePrefab;
 
             Instantiate(tilePrefab, new Vector3(tileCells[i].x * 5, 0f, tileCells[i].y * 5), Quaternion.identity);
-            yield return new WaitForSeconds(0f);
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return null;
+    }
+
+    private IEnumerator DrawGrassTiles()
+    {
+        for(int x = 0; x < gridWidth; x++)
+        {
+            for(int y = 0; y < gridHeight; y++)
+            {
+                if (pathGenerator.TileisFree(x, y))
+                {
+                    Instantiate(grassTile.tilePrefab, new Vector3(x * 5, 0f, y * 5), Quaternion.identity);
+                    yield return new WaitForSeconds(0.025f);
+                }
+            }
         }
         yield return null;
     }

@@ -29,12 +29,12 @@ public class PathGenerator
             {
                 int move = Random.Range(0, 3);
 
-                if (move == 0 || x % 2 == 0 || x > (width - 2 /* 8 */))
+                if (move == 0 || x % 2 == 0 || x > (width - 2 /* 14 */))
                 {
                     x++;
                     valid = true;
                 }
-                else if (move == 1 && TileisFree(x, (y + 1)) && y < (height - 2 /* 4 */ ))
+                else if (move == 1 && TileisFree(x, (y + 1)) && y < (height - 2 /* 8 */ ))
                 {
                     y++;
                     valid = true;
@@ -49,12 +49,12 @@ public class PathGenerator
         return tileCells;
     }
 
-    private bool TileisFree(int x, int y)
+    public bool TileisFree(int x, int y)
     {
         return !tileCells.Contains(new Vector2Int(x, y)); 
     }
 
-    private bool TileisTaken(int x, int y)
+    public bool TileisTaken(int x, int y)
     {
         return tileCells.Contains(new Vector2Int(x, y));
     }

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb4391b3fad73849b8cca858b8ed310, type: 3}
   m_Name: DirtTile
   m_EditorClassIdentifier: 
+  cellType: 0
   tilePrefab: {fileID: 7755771959508959414, guid: 8d31557b7c1d5524c981063bf5bb0460, type: 3}
