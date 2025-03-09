@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3921566748155589074}
   - component: {fileID: 6140302015133495834}
   - component: {fileID: 8919534088361098812}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,3 +122,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  health: 3

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4562474691838962278}
   - component: {fileID: 1333072110098979624}
   - component: {fileID: 6367317158368085519}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Dirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7330974075366093380}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GrassTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 5863719276000728401}
   - component: {fileID: 3041712621281177861}
   - component: {fileID: 4401149215128078282}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Grass
   m_TagString: Untagged
   m_Icon: {fileID: 0}

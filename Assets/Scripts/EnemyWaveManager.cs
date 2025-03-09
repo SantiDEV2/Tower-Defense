@@ -6,7 +6,7 @@ public class EnemyWaveManager : MonoBehaviour
 {
     [Header("Wave Settings")]
     public float spawnDelay = 0.5f;
-    public float timeBetweenWaves = 10f;
+    public float timeBetweenWaves = 20f;
     public int maxWaves = 3;
     
     [Header("Enemy Settings")]
@@ -14,18 +14,29 @@ public class EnemyWaveManager : MonoBehaviour
     
     [Header("Pool Settings")]
     private List<GameObject> pooledObjects = new List<GameObject>();
-    private int amountPool = 40;
+    private int amountPool = 25;
     
     [HideInInspector] public int enemysAlive;
     [HideInInspector] public int enemyCount;
     [HideInInspector] public int waveCount = 0;
-    
+
+    [Header("Wave Settings")]
+    [HideInInspector] public float waveTimer;
     private List<Vector2Int> tileCells;
-    private float waveTimer;
     private bool waveCompleted = false;
     private bool waveStarted = false;
-    
-    private void Start()
+
+    private void OnEnable()
+    {
+        UIManager.OnGameStart += InitializeGame;
+    }
+
+    private void OnDisable()
+    {
+        UIManager.OnGameStart -= InitializeGame;
+    }
+
+    private void InitializeGame()
     {
         UpdateEnemyCount();
         ResetTimer();
@@ -167,5 +178,19 @@ public class EnemyWaveManager : MonoBehaviour
     public List<Vector2Int> GetTileCells()
     {
         return tileCells;
+    }
+
+    public List<GameObject> GetActiveEnemies()
+    {
+        List<GameObject> activeEnemies = new List<GameObject>();
+        
+        foreach (GameObject obj in pooledObjects)
+        {
+            if (obj != null && obj.activeInHierarchy)
+            {
+                activeEnemies.Add(obj);
+            }
+        }
+    return activeEnemies;
     }
 }

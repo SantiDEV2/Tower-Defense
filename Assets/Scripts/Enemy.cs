@@ -9,20 +9,20 @@ public class Enemy : MonoBehaviour
     
     [Header("Variables")]
     public int health = 3;
-    private int maxHealth = 3;
+    private readonly int maxHealth = 3;
 
 
     [Header("References")]
     private List<Vector2Int> path;
     private int currentPathIndex = 0;
     private EnemyWaveManager waveManager;
-    private LifeManager lifeManager;
+    private PlayerManager playerManager;
 
     [System.Obsolete]
     private void Start()
     {
         waveManager = FindObjectOfType<EnemyWaveManager>();
-        lifeManager = FindObjectOfType<LifeManager>();
+        playerManager = FindObjectOfType<PlayerManager>();
 
         path = waveManager.GetTileCells();
 
@@ -36,6 +36,8 @@ public class Enemy : MonoBehaviour
 
     private void MoveAlongPath()
     {
+        if(PlayerManager.IsGamePaused) return;
+
         if (path == null || path.Count <= 1 || currentPathIndex >= path.Count)
             return;
 
@@ -74,9 +76,9 @@ public class Enemy : MonoBehaviour
 
     private void ReachedEnd()
     {
-        if (lifeManager != null)
+        if (playerManager != null)
         {
-            lifeManager.life--;
+            playerManager.TakeDamage();
         }
 
         if (waveManager != null)
@@ -87,13 +89,12 @@ public class Enemy : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
-    public void Defeated()
-    {
-        if (waveManager != null)
+    public void TakeDamage(int damage){
+        health -= damage;
+        if(health == 0 )
         {
             waveManager.EnemyDefeated();
+            this.gameObject.SetActive(false);
         }
-
-        this.gameObject.SetActive(false);
     }
 }

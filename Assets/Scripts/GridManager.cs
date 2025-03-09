@@ -17,9 +17,18 @@ public class GridManager : MonoBehaviour
     private EnemyWaveManager enemyWaveManager;
     private Transform parent;
 
-    private void Start()
+    private void OnEnable()
     {
+        UIManager.OnGameStart += InitializeGame;
+    }
 
+    private void OnDisable()
+    {
+        UIManager.OnGameStart -= InitializeGame;
+    }
+
+    private void InitializeGame()
+    {
         parent = GameObject.Find("Tiles").transform;
         pathGenerator = new PathGenerator(gridWidth, gridHeight);
         enemyWaveManager = GetComponent<EnemyWaveManager>();
