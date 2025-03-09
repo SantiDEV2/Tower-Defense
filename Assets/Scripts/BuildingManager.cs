@@ -1,246 +1,138 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+// Clase encargada de gestionar la construcción de torres
 public class BuildingManager : MonoBehaviour
-{
-    [Header("Turret Prefabs")]
-    public GameObject turret1Prefab;
-    public GameObject turret2Prefab;
-    public GameObject turret3Prefab;
-    
+{   
+    [Header("Turret References")]
+    public GameObject[] turretPrefabs; // Array con los prefabs de las diferentes torres
+
     [Header("Building Settings")]
-    public LayerMask tileLayer;
-    public Material validPlacementMaterial;
-    public Material invalidPlacementMaterial;
+    public LayerMask layerMask; // Capas con las que interactúa el raycast para la colocación
+    public float placementHeight = 1f; // Altura a la que se colocan las torres
+    private float tileSize = 5f; // Tamaño de cada casilla del grid
     
-    [Header("References")]
-    private GridManager gridManager;
-    private GameObject currentTurretPreview;
-    private GameObject selectedTurretPrefab;
-    private bool buildModeActive = false;
+    private PlayerManager playerManager; // Referencia al gestor del jugador para gastos de moneda
+    private Camera mainCamera; // Cámara principal para el raycast
+    private GameObject turretPreview; // Vista previa de la torre a construir
+    private int selectedTurretIndex = -1; // Índice de la torre seleccionada (-1 = ninguna)
+    private bool canPlace = false; // Indica si se puede construir (grid generado)
+    private bool isBuilding = false; // Modo de construcción activo
+
+    // Suscripción/desuscripción a eventos cuando se genera el grid
+    private void OnEnable() => GridManager.OnTilesGenerated += EnableBuilding;
+    private void OnDisable() => GridManager.OnTilesGenerated -= EnableBuilding;
     
-    // Store a reference to all tiles and their positions
-    private Dictionary<Vector3, TileObject> tileMap = new Dictionary<Vector3, TileObject>();
-    // Store positions where turrets have been placed
-    private List<Vector3> occupiedPositions = new List<Vector3>();
-    
-    private void Start()
+    void Start()
     {
-        gridManager = FindAnyObjectByType<GridManager>();
-        
-        // Initially, no turret is selected
-        selectedTurretPrefab = null;
-        
-        // Map all tiles to their positions after a short delay to ensure all tiles are spawned
-        StartCoroutine(MapTilesAfterDelay());
+        mainCamera = Camera.main;
+        playerManager = FindAnyObjectByType<PlayerManager>();
+    }
+
+    void Update()
+    {
+        // No procesa si no está en modo construcción o el juego está pausado
+        if (!isBuilding || PlayerManager.IsGamePaused)
+            return;
+            
+        HandleTurretPlacement();
     }
     
-    private IEnumerator MapTilesAfterDelay()
+    // Habilita la construcción cuando el grid está completamente generado
+    private void EnableBuilding() => canPlace = true;
+    
+    // Selecciona un tipo de torre para construir
+    public void SelectTurret(int index)
     {
-        // Wait for the grid manager to finish spawning tiles
-        yield return new WaitForSeconds(10f);
+        if (!canPlace)
+            return;
+            
+        isBuilding = true;
+        selectedTurretIndex = index;
         
-        // Find all tile objects in the scene
-        GameObject tilesParent = GameObject.Find("Tiles");
-        if (tilesParent != null)
+        if (turretPreview != null)
+            Destroy(turretPreview);
+            
+        turretPreview = Instantiate(turretPrefabs[index]);
+        
+        // Desactiva todos los scripts en la vista previa para que no funcione como torre real
+        foreach (MonoBehaviour script in turretPreview.GetComponentsInChildren<MonoBehaviour>())
+            script.enabled = false;
+    }
+    
+    // Cancela el modo de construcción
+    public void CancelBuilding()
+    {
+        if (turretPreview != null)
         {
-            foreach (Transform child in tilesParent.transform)
-            {
-                // Raycast down to find the tile's collider
-                RaycastHit hit;
-                if (Physics.Raycast(child.position + Vector3.up, Vector3.down, out hit, 2f, tileLayer))
-                {
-                    // Try to find the TileObject component or tag to determine if it's grass or path
-                    GameObject hitObject = hit.collider.gameObject;
-                    
-                    // We need to associate each tile with its scriptable object type
-                    // For this example, we'll check the name to determine type
-                    TileObject tileObject = null;
-                    
-                    if (hitObject.name.Contains("Grass"))
-                    {
-                        tileObject = gridManager.grassTile;
-                    }
-                    else if (hitObject.name.Contains("Dirt"))
-                    {
-                        tileObject = gridManager.dirtTile;
-                    }
-                    
-                    if (tileObject != null)
-                    {
-                        Vector3 gridPos = new Vector3(
-                            Mathf.Round(child.position.x / 5) * 5,
-                            0f,
-                            Mathf.Round(child.position.z / 5) * 5
-                        );
-                        
-                        tileMap[gridPos] = tileObject;
-                    }
-                }
-            }
+            Destroy(turretPreview);
+            turretPreview = null;
         }
+        
+        isBuilding = false;
+        selectedTurretIndex = -1;
     }
     
-    private void Update()
-    {
-        if (buildModeActive && selectedTurretPrefab != null)
-        {
-            HandleTurretPlacement();
-        }
-    }
-    
+    // Maneja la colocación de torres siguiendo el cursor
     private void HandleTurretPlacement()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        
-        if (Physics.Raycast(ray, out hit, 100f, tileLayer))
-        {
-            // Convert to grid position (snapped to your 5 unit grid)
-            Vector3 gridPos = new Vector3(
-                Mathf.Round(hit.point.x / 5) * 5,
-                0f,
-                Mathf.Round(hit.point.z / 5) * 5
-            );
+        if (turretPreview == null || selectedTurretIndex < 0)
+            return;
             
-            // Update preview position
-            if (currentTurretPreview != null)
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, layerMask))
+        {
+            // Calcula la posición centrada en la casilla del grid
+            int tileIndexX = Mathf.FloorToInt(hit.point.x / tileSize);
+            int tileIndexZ = Mathf.FloorToInt(hit.point.z / tileSize);
+            
+            float tileCenterX = (tileIndexX * tileSize) + (tileSize * 0.5f);
+            float tileCenterZ = (tileIndexZ * tileSize) + (tileSize * 0.5f);
+            
+            Vector3 tileCenter = new Vector3(tileCenterX, hit.point.y + placementHeight, tileCenterZ);
+            
+            bool isValidPlacement = false;
+            bool hasTurret = false;
+            
+            // Verifica si la casilla es de tipo suelo
+            if (hit.collider.TryGetComponent<TileType>(out var tileType))
+                isValidPlacement = tileType.tileObject.cellType == TileObject.CellType.Ground;
+
+            // Comprueba si ya hay una torre en esta posición
+            foreach (Collider collider in Physics.OverlapSphere(tileCenter, 0.5f))
             {
-                currentTurretPreview.transform.position = new Vector3(gridPos.x, 0.5f, gridPos.z);
-                
-                // Check if this is a valid position
-                bool isValidPosition = IsValidPlacement(gridPos);
-                
-                // Update preview material
-                UpdatePreviewMaterial(isValidPosition);
-                
-                // Handle click for placement
-                if (Input.GetMouseButtonDown(0) && isValidPosition)
+                if (collider.GetComponent<Turret>() != null)
                 {
-                    PlaceTurret(gridPos);
-                    // Exit build mode after placing
-                    SetBuildMode(false);
+                    hasTurret = true;
+                    break;
                 }
             }
-        }
-    }
-    
-    private bool IsValidPlacement(Vector3 position)
-    {
-        // Check if position is occupied
-        if (occupiedPositions.Contains(position))
-        {
-            return false;
-        }
-        
-        // Check if position is a grass tile (not a path)
-        if (tileMap.ContainsKey(position))
-        {
-            TileObject tileObj = tileMap[position];
-            return tileObj.cellType == TileObject.CellType.Ground;
-        }
-        
-        return false;
-    }
-    
-    private void UpdatePreviewMaterial(bool isValid)
-    {
-        if (currentTurretPreview != null)
-        {
-            // Get all renderers in the preview
-            Renderer[] renderers = currentTurretPreview.GetComponentsInChildren<Renderer>();
             
-            // Apply appropriate material
-            Material previewMaterial = isValid ? validPlacementMaterial : invalidPlacementMaterial;
+            turretPreview.transform.position = tileCenter;
+        
+            // Cambia el color de la vista previa según si es válido colocar ahí
+            Color previewColor = isValidPlacement && !hasTurret ? Color.green : Color.red;
+            previewColor.a = 0.5f;
             
-            foreach (Renderer renderer in renderers)
+            foreach (Renderer renderer in turretPreview.GetComponentsInChildren<Renderer>())
             {
-                // Store original materials to restore if needed
-                Material[] originalMaterials = new Material[renderer.materials.Length];
-                for (int i = 0; i < renderer.materials.Length; i++)
-                {
-                    originalMaterials[i] = previewMaterial;
-                }
-                renderer.materials = originalMaterials;
+                foreach (Material material in renderer.materials)
+                    material.color = previewColor;
             }
+            
+            // Coloca la torre si se hace clic y es una posición válida
+            if (Input.GetMouseButtonDown(0) && isValidPlacement && !hasTurret)
+                PlaceTurret(tileCenter);
         }
     }
     
+    // Coloca una torre en la posición indicada si hay suficientes monedas
     private void PlaceTurret(Vector3 position)
     {
-        // Instantiate the actual turret
-        Instantiate(selectedTurretPrefab, position, Quaternion.identity);
+        if (!playerManager.SpendCurrency(playerManager.GetTurretCost(selectedTurretIndex)))
+            return;
         
-        // Mark position as occupied
-        occupiedPositions.Add(position);
-        
-        // Clean up the preview
-        Destroy(currentTurretPreview);
-        currentTurretPreview = null;
-    }
-    
-    public void SelectTurret(int turretType)
-    {
-        // Clean up any existing preview
-        if (currentTurretPreview != null)
-        {
-            Destroy(currentTurretPreview);
-        }
-        
-        // Set the selected turret based on type
-        switch (turretType)
-        {
-            case 1:
-                selectedTurretPrefab = turret1Prefab;
-                break;
-            case 2:
-                selectedTurretPrefab = turret2Prefab;
-                break;
-            case 3:
-                selectedTurretPrefab = turret3Prefab;
-                break;
-        }
-        
-        // Create a preview of the selected turret
-        if (selectedTurretPrefab != null)
-        {
-            currentTurretPreview = Instantiate(selectedTurretPrefab);
-            
-            // Disable any scripts/components on the preview
-            MonoBehaviour[] components = currentTurretPreview.GetComponents<MonoBehaviour>();
-            foreach (MonoBehaviour component in components)
-            {
-                component.enabled = false;
-            }
-            
-            // Also disable components in children
-            MonoBehaviour[] childComponents = currentTurretPreview.GetComponentsInChildren<MonoBehaviour>();
-            foreach (MonoBehaviour component in childComponents)
-            {
-                component.enabled = false;
-            }
-            
-            // Set build mode active
-            SetBuildMode(true);
-        }
-    }
-    
-    public void SetBuildMode(bool active)
-    {
-        buildModeActive = active;
-        
-        // If deactivating build mode, clean up the preview
-        if (!active && currentTurretPreview != null)
-        {
-            Destroy(currentTurretPreview);
-            currentTurretPreview = null;
-            selectedTurretPrefab = null;
-        }
-    }
-    
-    public void CancelBuildMode()
-    {
-        SetBuildMode(false);
+        Instantiate(turretPrefabs[selectedTurretIndex], position, Quaternion.identity);
+        CancelBuilding();
     }
 }

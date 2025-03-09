@@ -748,7 +748,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: 0}
+  m_AnchoredPosition: {x: 75, y: 0}
   m_SizeDelta: {x: 512, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &20150052
@@ -5779,7 +5779,7 @@ GameObject:
   - component: {fileID: 277425089}
   - component: {fileID: 277425091}
   m_Layer: 5
-  m_Name: Turret_3 Image
+  m_Name: Turret_0 Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5886,7 +5886,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 277425089}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1764628134}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SelectTurret
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &278571495
 GameObject:
   m_ObjectHideFlags: 0
@@ -28379,7 +28391,7 @@ GameObject:
   - component: {fileID: 1386783549}
   - component: {fileID: 1386783551}
   m_Layer: 5
-  m_Name: Turret_2 Image
+  m_Name: Turret_1 Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28486,7 +28498,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1386783549}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1764628134}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SelectTurret
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1391690543
 GameObject:
   m_ObjectHideFlags: 0
@@ -33235,7 +33259,7 @@ GameObject:
   - component: {fileID: 1603789231}
   - component: {fileID: 1603789233}
   m_Layer: 5
-  m_Name: Turret_1 Image
+  m_Name: Turret_2 Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33342,7 +33366,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1603789231}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1764628134}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SelectTurret
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1611534154
 GameObject:
   m_ObjectHideFlags: 0
@@ -36556,14 +36592,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e9ea0b47443e04b9f7f02add4a3fde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turret1Prefab: {fileID: 2198041104810935478, guid: 32c935a47e553874cb5e70d22b18117e, type: 3}
-  turret2Prefab: {fileID: 8770445926791162618, guid: e5da2eb0316bb4944ab2e3d985050bdf, type: 3}
-  turret3Prefab: {fileID: 8671721330640355630, guid: 30e9fa03dbf92184a915f36087259872, type: 3}
-  tileLayer:
+  turretPrefabs:
+  - {fileID: 8671721330640355630, guid: 30e9fa03dbf92184a915f36087259872, type: 3}
+  - {fileID: 8770445926791162618, guid: e5da2eb0316bb4944ab2e3d985050bdf, type: 3}
+  - {fileID: 2198041104810935478, guid: 32c935a47e553874cb5e70d22b18117e, type: 3}
+  layerMask:
     serializedVersion: 2
     m_Bits: 128
-  validPlacementMaterial: {fileID: 2100000, guid: ffdcf022130d3f94c89590355ec80ccb, type: 2}
-  invalidPlacementMaterial: {fileID: 2100000, guid: 2d080860a860d834086304fd19392ae8, type: 2}
+  placementHeight: 1
 --- !u!114 &1764628133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36577,6 +36613,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   life: 3
+  startingCurrency: 100
+  turretCosts: 3200000064000000c8000000
 --- !u!114 &1764628134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36591,17 +36629,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownText: {fileID: 229578083}
   lifeText: {fileID: 1247178490}
+  currencyText: {fileID: 354866040}
   buildingManager: {fileID: 1764628132}
   countdownPanel: {fileID: 2052963588}
   mainPanel: {fileID: 1164508006}
   winPanel: {fileID: 1950765205}
   losePanel: {fileID: 918118816}
-  buildButton: {fileID: 1603789233}
-  cancelButton: {fileID: 1386783551}
-  buildingPanel: {fileID: 1541607525}
-  turret1Button: {fileID: 1603789233}
-  turret2Button: {fileID: 1386783551}
-  turret3Button: {fileID: 277425091}
+  turret0Button: {fileID: 277425091}
+  turret1Button: {fileID: 1386783551}
+  turret2Button: {fileID: 1603789233}
 --- !u!1 &1784010214
 GameObject:
   m_ObjectHideFlags: 0

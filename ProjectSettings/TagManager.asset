@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Dirt
+  - Grass
   layers:
   - Default
   - TransparentFX
@@ -12,7 +14,7 @@ TagManager:
   - Water
   - UI
   - Enemies
-  - Grass
+  - Tiles
   - 
   - 
   - 

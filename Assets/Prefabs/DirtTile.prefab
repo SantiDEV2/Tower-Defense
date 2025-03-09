@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5753015191133139540}
   - component: {fileID: 5337975229438764235}
   - component: {fileID: 225464991923992853}
-  m_Layer: 0
-  m_Name: Dirt
+  m_Layer: 7
+  m_Name: Fang
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,9 +95,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1315741228066118912}
-  m_Layer: 0
+  - component: {fileID: 2160054887156026109}
+  - component: {fileID: 3292983759982613529}
+  m_Layer: 7
   m_Name: DirtTile
-  m_TagString: Untagged
+  m_TagString: Dirt
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,6 +121,40 @@ Transform:
   - {fileID: 5753015191133139540}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2160054887156026109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7755771959508959414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ffdba12fb6ad247ad7fbd47f862e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileObject: {fileID: 11400000, guid: ce023ab26d807a646857a0c2cf7b0e4e, type: 2}
+--- !u!65 &3292983759982613529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7755771959508959414}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 0.5, z: 5}
+  m_Center: {x: 2.5, y: 0.05, z: 2.5}
 --- !u!1 &8656607766358601572
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,9 +166,8 @@ GameObject:
   - component: {fileID: 1796910842958035300}
   - component: {fileID: 5535286992881555136}
   - component: {fileID: 4306845860774950904}
-  - component: {fileID: 2818243124510447237}
-  m_Layer: 0
-  m_Name: Fang
+  m_Layer: 7
+  m_Name: Dirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,24 +241,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2818243124510447237
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8656607766358601572}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
