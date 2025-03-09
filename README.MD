@@ -2,10 +2,10 @@
 
 ### Diagrama de FLujo
 
-![Diagrama](Diagrama de Flujo.png)
+![Diagrama](https://github.com/SantiDEV2/Tower-Defense/blob/main/Diagrama%20de%20Flujo.png)
 
 ---
 
 ### Diagrama de Clases
 
-![Diagrama2](Diagrama de Clases.png)
+![Diagrama2](https://github.com/SantiDEV2/Tower-Defense/blob/main/Diagrama%20de%20Clases.png)
